@@ -1,3 +1,5 @@
+package component;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +10,7 @@ public class Buffer {
     private List<Data> buffer = new ArrayList<Data>();
 
     public boolean isBufferEmpty() {
-        if(buffer.isEmpty()){
+        if (buffer.isEmpty()) {
             return true;
         }
         return false;

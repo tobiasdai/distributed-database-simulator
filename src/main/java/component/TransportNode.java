@@ -1,4 +1,8 @@
-import java.util.List;
+package component;
+
+import component.Buffer;
+import component.Node;
+
 import java.util.Map;
 
 /**
@@ -29,7 +33,7 @@ public class TransportNode {
                 return true;
             }
         }
-        System.out.println("nodeId not found!");
+        System.out.println("nodeId not found1!");
         return false;
     }
 
@@ -42,7 +46,7 @@ public class TransportNode {
                 return true;
             }
         }
-        System.out.println("nodeId not found!");
+        System.out.println("nodeId not found!!");
         return false;
     }
 
@@ -85,7 +89,7 @@ public class TransportNode {
                 chosenNodeId = entry.getKey();
             }
         }
-        nodeMap.get(chosenNodeId).receiveData();
+//        nodeMap.get(chosenNodeId).receiveData();
         return true;
     }
 

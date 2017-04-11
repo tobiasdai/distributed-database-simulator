@@ -1,3 +1,7 @@
+package component;
+
+import component.Buffer;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -6,21 +10,20 @@ import java.util.Map;
  */
 public class Client {
     private int clientId;
-    private Map<Integer,Data> dataMap;
+    private Map<Integer, Data> dataMap;
     private TransportNode transportNode;
     private Buffer buffer;
-    private static int counter=0;
 
-    public Client() {
-        this.clientId = counter+1;
-        this.dataMap = new HashMap<Integer,Data>();
+    public Client(int counter) {
+        this.clientId = counter;
+        this.dataMap = new HashMap<Integer, Data>();
         this.transportNode = null;
         this.buffer = new Buffer();
     }
 
-    public Client(TransportNode transportNode) {
-        this.clientId = counter+1;
-        this.dataMap = new HashMap<Integer,Data>();
+    public Client(int counter, TransportNode transportNode) {
+        this.clientId = counter;
+        this.dataMap = new HashMap<Integer, Data>();
         this.transportNode = transportNode;
         this.buffer = new Buffer();
     }
