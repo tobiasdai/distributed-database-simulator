@@ -15,4 +15,19 @@ public class Buffer {
         }
         return false;
     }
+
+    public List<Data> getBufferList() {
+        return buffer;
+    }
+
+    public void putData(Data data) {
+        buffer.add(data);
+    }
+
+    public void putData(List<Data> dataList) {
+        for (Data data : dataList) {
+            buffer.add(data);
+        }
+    }
+
 }

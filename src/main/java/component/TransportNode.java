@@ -24,31 +24,23 @@ public class TransportNode {
         loadMap.put(node.getNodeId(), node.getLoad());
     }
 
-    public boolean deleteNode(Node node) {
-        for (Map.Entry<Integer, Node> entry : nodeMap.entrySet()) {
-            if (entry.getKey() == node.getNodeId()) {
-                nodeMap.remove(entry.getKey());
-                delayMap.remove(entry.getKey());
-                loadMap.remove(entry.getKey());
-                return true;
-            }
-        }
-        System.out.println("nodeId not found1!");
-        return false;
+    public boolean deleteNode(Node node) throws Exception {
+        return deleteNode(node.getNodeId());
     }
 
-    public boolean deleteNode(int nodeId) {
-        for (Map.Entry<Integer, Node> entry : nodeMap.entrySet()) {
-            if (entry.getKey() == nodeId) {
-                nodeMap.remove(entry.getKey());
-                delayMap.remove(entry.getKey());
-                loadMap.remove(entry.getKey());
-                return true;
-            }
+    public boolean deleteNode(int nodeId) throws Exception {
+        try {
+            nodeMap.remove(nodeId);
+            delayMap.remove(nodeId);
+            loadMap.remove(nodeId);
+        } catch (Exception e) {
+            System.out.println("nodeId not found1!");
+            return false;
         }
-        System.out.println("nodeId not found!!");
-        return false;
+        System.out.println("The node has been deleted!");
+        return true;
     }
+
 
     public void showDelay() {
         for (Map.Entry<Integer, Long> entry : delayMap.entrySet()) {
@@ -89,9 +81,19 @@ public class TransportNode {
                 chosenNodeId = entry.getKey();
             }
         }
-//        nodeMap.get(chosenNodeId).receiveData();
+        nodeMap.get(chosenNodeId).getBuffer().getBufferList()
+        nodeMap.get(chosenNodeId).receiveData();
         return true;
     }
 
+    public void noticeChanges() {
+        if (!buffer.isBufferEmpty()) {
+            chooseNode();
+        }
+    }
 
+
+    public Buffer getBuffer() {
+        return buffer;
+    }
 }

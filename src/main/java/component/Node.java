@@ -18,9 +18,6 @@ public class Node {
     private Map<Integer, Data> dataMap;
     private Map<Integer, Client> clientMap;
 
-//    public Data read(int dataId){
-//
-//    }
 
     public long getDelay() {
         return delay;
@@ -32,5 +29,9 @@ public class Node {
 
     public int getLoad() {
         return load;
+    }
+
+    public Buffer getBuffer() {
+        return buffer;
     }
 }
