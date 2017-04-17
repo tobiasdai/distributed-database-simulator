@@ -10,24 +10,46 @@ public class Buffer {
     private List<Data> buffer = new ArrayList<Data>();
 
     public boolean isBufferEmpty() {
-        if (buffer.isEmpty()) {
-            return true;
-        }
-        return false;
+        return buffer.isEmpty();
     }
 
     public List<Data> getBufferList() {
         return buffer;
     }
 
-    public void putData(Data data) {
-        buffer.add(data);
+    public Buffer() {
     }
 
-    public void putData(List<Data> dataList) {
-        for (Data data : dataList) {
-            buffer.add(data);
+//    public Buffer(List<Data> dataList){
+//        buffer.clear();
+//        for (Data n:dataList){
+//            buffer.add(new Data(n));
+//        }
+//    }
+//
+//    public Buffer (Buffer buffer){
+//        this.buffer.clear();
+//        for (Data n : buffer.getBufferList()){
+//            this.buffer.add(new Data(n));
+//        }
+//    }
+
+    public void addData(Data data) {
+        buffer.add(new Data(data));
+    }
+
+    public void addData(List<Data> dataList) {
+        for (Data n : dataList) {
+            buffer.add(new Data(n));
         }
+    }
+
+    public void addData(Buffer buff) {
+        addData(buff.getBufferList());
+    }
+
+    public void clearBuffer() {
+        buffer.clear();
     }
 
 }

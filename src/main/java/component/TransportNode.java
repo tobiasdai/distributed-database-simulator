@@ -3,7 +3,10 @@ package component;
 import component.Buffer;
 import component.Node;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by dais on 2017-4-8.
@@ -16,12 +19,20 @@ public class TransportNode {
     private int delayWeighting = 1;
     private int loadWeighting = 1;
 
+    public TransportNode() {
+        nodeMap = new HashMap<Integer, Node>();
+        delayMap = new HashMap<Integer, Long>();
+        loadMap = new HashMap<Integer, Integer>();
+        buffer = new Buffer();
+        checkBufferStatus();
+    }
 
     //add node,delay,load in maps
     public void addNode(Node node) {
         nodeMap.put(node.getNodeId(), node);
         delayMap.put(node.getNodeId(), node.getDelay());
         loadMap.put(node.getNodeId(), node.getLoad());
+        node.setTransportNode(this);
     }
 
     public boolean deleteNode(Node node) throws Exception {
@@ -67,10 +78,8 @@ public class TransportNode {
     }
 
 
-    public boolean chooseNode() {
-        if (!nodeMap.isEmpty()) {
-            return false;
-        }
+    public void chooseNode() {
+        System.out.println("now start choosing Node");
         int chosenNodeId = 0;
         double maxWeightedValue = 0;
         for (Map.Entry<Integer, Node> entry : nodeMap.entrySet()) {
@@ -81,17 +90,22 @@ public class TransportNode {
                 chosenNodeId = entry.getKey();
             }
         }
-        nodeMap.get(chosenNodeId).getBuffer().getBufferList()
-        nodeMap.get(chosenNodeId).receiveData();
-        return true;
+        nodeMap.get(chosenNodeId).getBuffer().addData(buffer);
+        buffer.clearBuffer();
+        System.out.println("choose Node ended");
     }
 
-    public void noticeChanges() {
-        if (!buffer.isBufferEmpty()) {
-            chooseNode();
-        }
-    }
 
+    public void checkBufferStatus() {
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (!buffer.isBufferEmpty()) {
+                    chooseNode();
+                }
+            }
+        }, 0, 100);
+    }
 
     public Buffer getBuffer() {
         return buffer;
