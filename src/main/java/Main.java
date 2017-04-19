@@ -12,7 +12,11 @@ import manager.ClientManager;
  */
 public class Main {
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws Exception {
+        readTest();
+    }
+
+    public static void readTest() throws InterruptedException {
         TransportNode transportNode = new TransportNode();
         Node node1 = new Node();
         transportNode.addNode(node1);

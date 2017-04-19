@@ -10,6 +10,7 @@ import java.util.Date;
  * Read-Request has type 'r', dataId 0, the dataId we needed is writen in content field
  * data has type 'd'
  * ack has type 'k' , dataId 0
+ * Write-Request has type 'w'
  */
 public class Data {
     private int dataId;

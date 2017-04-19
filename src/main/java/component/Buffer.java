@@ -44,6 +44,10 @@ public class Buffer {
         }
     }
 
+    public void deleteData(Data data) {
+        buffer.remove(data);
+    }
+
     public void addData(Buffer buff) {
         addData(buff.getBufferList());
     }

@@ -2,10 +2,7 @@ package component;
 
 import component.Buffer;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 /**
  * Created by dais on 2017-4-8.
@@ -42,7 +39,7 @@ public class Client {
     public void sendReadRequest(int dataId) throws InterruptedException {
         Data data = new Data('r', Integer.toString(dataId), clientId);
         transportNode.getBuffer().addData(data);
-        System.out.println("Already sent");
+        System.out.println("Read request already sent");
         if (receiveData(data)) {
             System.out.println("Test succeeded");
         } else {
@@ -50,6 +47,12 @@ public class Client {
             sendReadRequest(dataId);
         }
         ;
+    }
+
+    public void sendWriteRequest() {
+        Data data = new Data('w', "Content", clientId);
+        transportNode.getBuffer().addData(data);
+        System.out.println("Write request already sent");
     }
 
     //	scheduleAtFixedRate是不在乎执行时间，如果运算得慢会多次。而直接schedule会考虑执行时间，往后加100ms
@@ -67,9 +70,12 @@ public class Client {
             @Override
             public void run() {
                 if (!buffer.isBufferEmpty()) {
-                    for (Data data : buffer.getBufferList()) {
+                    for (Iterator<Data> it = buffer.getBufferList().iterator(); it.hasNext(); ) {
+                        Data data = it.next();
+                        it.remove();
                         if (data.getDataId() == Integer.parseInt(sdata.getContent())) {
                             System.out.println("Client received successfully");
+                            dataMap.put(data.getDataId(), new Data(data));
                             timer.cancel();
                             timer = null;
                             bufferCheck = true;

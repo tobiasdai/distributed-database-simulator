@@ -3,10 +3,7 @@ package component;
 import component.Buffer;
 import component.Node;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 /**
  * Created by dais on 2017-4-8.
@@ -78,20 +75,24 @@ public class TransportNode {
     }
 
 
-    public void chooseNode() {
+    public void chooseNode(Data data) {
         System.out.println("now start choosing Node");
-        int chosenNodeId = 0;
+        Node chosenNode = null;
         double maxWeightedValue = 0;
         for (Map.Entry<Integer, Node> entry : nodeMap.entrySet()) {
             int key = entry.getKey();
             int weightedValue = (int) (100 - delayMap.get(key) / 10) * delayWeighting + (100 - loadMap.get(key)) * loadWeighting;
             if (weightedValue > maxWeightedValue) {
                 maxWeightedValue = weightedValue;
-                chosenNodeId = entry.getKey();
+                chosenNode = entry.getValue();
             }
         }
-        nodeMap.get(chosenNodeId).getBuffer().addData(buffer);
-        buffer.clearBuffer();
+        if (chosenNode == null) {
+            System.out.println("No Node was chosen");
+            System.exit(1);
+        }
+        chosenNode.getBuffer().addData(data);
+        buffer.deleteData(data);
         System.out.println("choose Node ended");
     }
 
@@ -101,7 +102,13 @@ public class TransportNode {
             @Override
             public void run() {
                 if (!buffer.isBufferEmpty()) {
-                    chooseNode();
+                    for (Iterator<Data> it = buffer.getBufferList().iterator(); it.hasNext(); ) {
+                        Data data = it.next();
+                        it.remove();
+                        if (data.getType() == 'r') {
+                            chooseNode(data);
+                        }
+                    }
                 }
             }
         }, 0, 100);
