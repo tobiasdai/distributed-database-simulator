@@ -3,43 +3,39 @@ package component;
 
 import manager.ClientManager;
 
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 /**
  * Created by dais on 2017-4-7.
  */
 public class Node {
-
-
     private int nodeId;
-    private int priority;
     private TransportNode transportNode;
     private int load;
     private long delay;
     private Buffer buffer;
     private Map<Integer, Data> dataMap;
-    private int tempClientId;
+    //    private int tempClientId;
     private static int nodeCounter = 0;
 
     public Node() {
         nodeId = ++nodeCounter;
         checkBufferStatus();
         buffer = new Buffer();
+        load = new Random().nextInt(100);
+        delay = new Random().nextInt(10000);
     }
 
     public void setDataMap(Map<Integer, Data> dataMap) {
         this.dataMap = dataMap;
     }
 
-    public void setTransportNode(TransportNode transportNode) {
-        this.transportNode = transportNode;
+    public Map<Integer, Data> getDataMap() {
+        return dataMap;
     }
 
-    public void setTempClientId(int tempClientId) {
-        this.tempClientId = tempClientId;
+    public void setTransportNode(TransportNode transportNode) {
+        this.transportNode = transportNode;
     }
 
     public long getDelay() {
@@ -59,16 +55,26 @@ public class Node {
     }
 
 
+
     public void receiveAndSendData(Data data) {
         Client targetClient = ClientManager.getClientWithClientId(data.getClinetId());
+        long randomNetDelay = new Random().nextInt(transportNode.getRandomDelayBound());
         if (data.getType() == 'r') {
-//            System.out.println("服务器已收到");
+//            Data ndata = dataMap.get(Integer.parseInt(data.getContent()));
+//            Data result = new Data(ndata);
+            System.out.println("random delay of node : " + randomNetDelay + " ms");
             Data result = new Data(dataMap.get(Integer.parseInt(data.getContent())));
+            result.setTimestamp(data.getTimestamp() + delay / 2 + randomNetDelay);
             targetClient.getBuffer().addData(result);
-//            System.out.println("服务器已发回");
         }
         if (data.getType() == 'w') {
-            //codes for writing data
+            if (dataMap.get(data.getDataId()) == null && data.getVersionstamp() == 1 || data.getVersionstamp() > dataMap.get(data.getDataId()).getVersionstamp()) {
+                data.setType('d');
+                dataMap.put(data.getDataId(), new Data(data));
+                transportNode.plusDataCheckSum(data.getDataId());
+            } else {
+                transportNode.minusDataCheckSum(data.getDataId());
+            }
         }
     }
 
@@ -78,11 +84,17 @@ public class Node {
             @Override
             public void run() {
                 if (!buffer.isBufferEmpty()) {
-                    for (Data data : buffer.getBufferList()) {
+                    for (Iterator<Data> iterator = buffer.getBufferList().iterator(); iterator.hasNext(); ) {
+                        Data data = iterator.next();
+                        iterator.remove();
                         receiveAndSendData(data);
                     }
                 }
             }
-        }, 0, 100);
+        }, 0, 20);
+    }
+
+    public int calculateWeighting(int delayWeighting, int loadWeighting) {
+        return (int) ((100 - getDelay() / 10) * delayWeighting + (100 - getLoad()) * loadWeighting);
     }
 }

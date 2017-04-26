@@ -11,6 +11,7 @@ import java.util.Date;
  * data has type 'd'
  * ack has type 'k' , dataId 0
  * Write-Request has type 'w'
+ * type 'n' means failed
  */
 public class Data {
     private int dataId;
@@ -23,7 +24,7 @@ public class Data {
     public Data(Data data) {
         this.dataId = data.getDataId();
         this.type = data.getType();
-        this.timestamp = data.getTimestamp();
+        this.timestamp = data.timestamp;
         this.content = data.getContent();
         this.versionstamp = data.getVersionstamp();
         this.clinetId = data.getClinetId();
@@ -32,22 +33,24 @@ public class Data {
     public Data(int dataId) {
         this.dataId = dataId;
         type = 'd';
-        versionstamp = 1;
         timestamp = new Date().getTime();
+        versionstamp = 1;
     }
 
     public Data(int dataId, int clinetId) {
         this.clinetId = clinetId;
         this.dataId = dataId;
+        timestamp = new Date().getTime();
         type = 'd';
         versionstamp = 1;
-        timestamp = new Date().getTime();
     }
 
     public Data(char type, String content, int clinetId) {
         this.type = type;
         this.content = content;
         this.clinetId = clinetId;
+        this.timestamp = new Date().getTime();
+        versionstamp = 1;
     }
 
     public int getClinetId() {

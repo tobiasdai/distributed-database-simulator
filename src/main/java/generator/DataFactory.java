@@ -13,7 +13,7 @@ public class DataFactory {
     private static int counter = 1;
 
     //tested
-    public static Map<Integer, Data> dataGenerator(int num) {
+    public static Map<Integer, Data> dataMapGenerator(int num) {
         Map<Integer, Data> dataMap = new HashMap<Integer, Data>();
         for (int i = 0; i < num; i++) {
             Data data = new Data(counter);
@@ -22,6 +22,12 @@ public class DataFactory {
         }
         return dataMap;
     }
+
+    public static Data dataGenerator() {
+        return new Data(counter++);
+    }
+
+
 
 
 }
