@@ -8,18 +8,21 @@ import java.util.*;
 
 /**
  * Created by dais on 2017-4-8.
+ * The class "TransportNode" simulate the network or you are regard it as Reverse proxy node
+ * It receives the Data from node and implements the strategy of chooing node to process request
  */
 public class TransportNode {
-    private Map<Integer, Node> nodeMap;
-    private Map<Integer, Long> delayMap;
-    private Map<Integer, Integer> loadMap;
-    private Map<Integer, Integer> weightingMap;
-    private Map<Integer, Integer> dataCheckSumMap;
-    private Buffer buffer;
-    private int delayWeighting;
-    private int loadWeighting;
-    private int randomDelayBound;
-    private int writeFactor;
+    protected Map<Integer, Node> nodeMap;
+    protected Map<Integer, Long> delayMap;
+    protected Map<Integer, Integer> loadMap;
+    protected Map<Integer, Integer> weightingMap;
+    protected Map<Integer, Integer> dataCheckSumMap;
+    protected Buffer buffer;
+    protected int delayWeighting;
+    protected int loadWeighting;
+    protected int randomDelayBound;
+    protected int writeFactor;
+    protected int readFactor;
 
     public TransportNode() {
         nodeMap = new HashMap<Integer, Node>();
@@ -32,7 +35,9 @@ public class TransportNode {
         delayWeighting = Integer.parseInt(PropertiesConfig.readData("delayWeighting"));
         loadWeighting = Integer.parseInt(PropertiesConfig.readData("loadWeighting"));
         checkBufferStatus();
-        System.out.println("randomDelayBound is " + randomDelayBound + " ms");
+        System.out.println("RandomDelayBound: " + randomDelayBound + " ms");
+        System.out.println("Client Timeout: " + Client.clientTimeOut + "ms");
+        System.out.println("Writefactor :"+PropertiesConfig.readData("writeFactor"));
     }
 
     //add node,delay,load in maps
@@ -43,6 +48,13 @@ public class TransportNode {
         loadMap.put(id, node.getLoad());
         weightingMap.put(id, node.calculateWeighting(delayWeighting, loadWeighting));
         node.setTransportNode(this);
+    }
+
+    public void generateNodeMap(Map<Integer, Node> nodeMap) {
+        this.nodeMap = nodeMap;
+        updataDelay();
+        updataLoad();
+        updataWeighting();
     }
 
     public boolean deleteNode(Node node) throws Exception {
@@ -58,7 +70,6 @@ public class TransportNode {
             System.out.println("nodeId not found1!");
             return false;
         }
-        System.out.println("The node has been deleted!");
         return true;
     }
 
@@ -93,79 +104,28 @@ public class TransportNode {
         }
     }
 
+    public void updataWeighting(){
+        for (Map.Entry<Integer, Node> entry : nodeMap.entrySet()) {
+            weightingMap.put(entry.getKey(), entry.getValue().calculateWeighting(delayWeighting, loadWeighting));
+        }
+    }
+
+    public Map<Integer, Node> getNodeMap() {
+        return nodeMap;
+    }
+
+    public Map<Integer, Integer> getDataCheckSumMap() {
+        return dataCheckSumMap;
+    }
+
     public int getRandomDelayBound() {
         return randomDelayBound;
     }
 
     public void chooseNode(Data data) {
-        System.out.println("now start choosing Node");
-        int numberOfNodes = nodeMap.size();
-        writeFactor = (int) Math.floor(numberOfNodes / 2) + 1;
-        int readFactor = numberOfNodes - writeFactor + 1;
-        int randomNetDelay = 0;
-        int chosenNodeId = 0;
-        int maxVersionStamp = 0;
-        long longstDelay = 0;
-        Node[] chosenNodes = nodeMap.values().toArray(new Node[numberOfNodes]);
-        nodeBubbleSort(chosenNodes, 'r');
-        if (chosenNodes[readFactor - 1].getDelay() == 9999) {
-            System.out.println("The number of selected nodes is insufficient. Please check node status.");
-            return;
-        }
-        randomNetDelay = new Random().nextInt(randomDelayBound);
-        System.out.println("random delay of transportNode: " + randomNetDelay + " ms");
-        for (int i = 0; i < readFactor; i++) {
-            int versionStamp = chosenNodes[i].getDataMap().get(Integer.parseInt(data.getContent())).getVersionstamp();
-            if (versionStamp > maxVersionStamp) {
-                chosenNodeId = i;
-            }
-            if (delayMap.get(chosenNodes[i].getNodeId()) > longstDelay) {
-                longstDelay = delayMap.get(chosenNodes[i].getNodeId());
-            }
-        }
-        data.setTimestamp(data.getTimestamp() + longstDelay / 2 + randomNetDelay);
-        chosenNodes[chosenNodeId].getBuffer().addData(data);
-        System.out.println("choose Node ended");
     }
 
-    /**
-     * This method can only be applied when all nodes have priority 1
-     */
     public void notifyNodes(Data data) throws InterruptedException {
-        System.out.println("now start writing");
-        long randomNetDelay1 = 0;
-        long randomNetDelay2 = 0;
-        int numberOfNodes = nodeMap.size();
-        writeFactor = (int) Math.floor(numberOfNodes / 2) + 1;
-        Random random = new Random();
-        Node[] nodes = nodeMap.values().toArray(new Node[numberOfNodes]);
-        nodeBubbleSort(nodes, 'w');
-        dataCheckSumMap.put(data.getDataId(), 0);
-        if (nodes[writeFactor - 1].getDelay() == 9999) {
-            System.out.println("Writing operator unpossible. Please check node status.");
-            return;
-        }
-        randomNetDelay1 = random.nextInt(randomDelayBound);
-        randomNetDelay2 = random.nextInt(randomDelayBound);
-        System.out.println("Random delay 1 : " + randomNetDelay1 + " ms");
-        System.out.println("Random delay 2 : " + randomNetDelay2 + " ms");
-        for (Map.Entry<Integer, Node> entry : nodeMap.entrySet()) {
-            entry.getValue().getBuffer().addData(data);
-        }
-        while (dataCheckSumMap.get(data.getDataId()) != -1 * numberOfNodes || dataCheckSumMap.get(data.getDataId()) < writeFactor && dataCheckSumMap.get(data.getDataId()) > 0) {
-            Thread.sleep(10);
-        }
-        Client targetClient = ClientManager.getClientWithClientId(data.getClinetId());
-        Data result = new Data(0);
-        if (dataCheckSumMap.get(data.getDataId()) == -1 * numberOfNodes) {
-            result = new Data('n', "", 0);
-        } else {
-            result = new Data('k', Integer.toString(data.getDataId()), 0);
-        }
-        System.out.println("the type of writing result is " + result.getType());
-        result.setTimestamp(data.getTimestamp() + nodes[writeFactor - 1].getDelay() + randomNetDelay1 + randomNetDelay2);
-        targetClient.getBuffer().addData(result);
-        System.out.println("Now send ack/error back to client");
     }
 
 
@@ -174,22 +134,31 @@ public class TransportNode {
             @Override
             public void run() {
                 if (!buffer.isBufferEmpty()) {
-                    for (Iterator<Data> it = buffer.getBufferList().iterator(); it.hasNext(); ) {
+                    if(PropertiesConfig.readData("writeFactor").equals("default")){
+                        writeFactor = (int) Math.floor(nodeMap.size() / 2) + 1;
+                        readFactor = nodeMap.size() - writeFactor + 1;
+                    }else{
+                        //new writeFactor here
+                    }
+                    for (ListIterator<Data> it = buffer.getBufferList().listIterator(); it.hasNext(); ) {
                         Data data = it.next();
                         it.remove();
-                        if (data.getType() == 'r') {
-                            chooseNode(data);
-                        }
-                        if (data.getType() == 'w') {
-                            try {
-                                notifyNodes(data);
-                            } catch (InterruptedException e) {
+                        try {
+                            if (data.getType() == 'r') {
+                                chooseNode(data);
+                                break;
                             }
+                            if (data.getType() == 'w') {
+                                notifyNodes(data);
+                                break;
+                            }
+                            Thread.sleep(20);
+                        } catch (InterruptedException e) {
                         }
                     }
                 }
             }
-        }, 0, 20);
+        }, 0, 40);
     }
 
     public synchronized void plusDataCheckSum(int dataId) {
@@ -204,7 +173,7 @@ public class TransportNode {
         return buffer;
     }
 
-    private void nodeBubbleSort(Node[] nodes, char type) {
+    protected void nodeBubbleSort(Node[] nodes, char type) {
         for (int i = 0; i < nodes.length - 1; i++)
             for (int j = i + 1; j < nodes.length; j++) {
                 Node temp;

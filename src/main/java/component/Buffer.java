@@ -18,21 +18,8 @@ public class Buffer {
     }
 
     public Buffer() {
-    }
 
-//    public Buffer(List<Data> dataList){
-//        buffer.clear();
-//        for (Data n:dataList){
-//            buffer.add(new Data(n));
-//        }
-//    }
-//
-//    public Buffer (Buffer buffer){
-//        this.buffer.clear();
-//        for (Data n : buffer.getBufferList()){
-//            this.buffer.add(new Data(n));
-//        }
-//    }
+    }
 
     public void addData(Data data) {
         buffer.add(new Data(data));

@@ -12,18 +12,19 @@ import java.util.List;
 //that means it will not delete any client from clientList
 //if you want to delete some of clients,change the following structure "List" to "Map"
 public class ClientManager {
-    private static List<Client> clientList = new ArrayList<Client>();
+    public static List<Client> clientList = new ArrayList<Client>();
 
     public static void add(Client client) {
         clientList.add(client);
     }
 
-    public static List<Client> getClientList() {
-        return clientList;
+    public static void addAllClient(List<Client> clientList2){
+        clientList.addAll(clientList2);
     }
 
     public static Client getClientWithClientId(int id) {
-        return clientList.get(id);
+        return clientList.get(id-1);
     }
+
 
 }

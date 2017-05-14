@@ -15,23 +15,31 @@ public class Node {
     private long delay;
     private Buffer buffer;
     private Map<Integer, Data> dataMap;
-    //    private int tempClientId;
-    private static int nodeCounter = 0;
 
-    public Node() {
-        nodeId = ++nodeCounter;
+
+
+    public Node(int id) {
+        nodeId = id;
+        dataMap = new HashMap<Integer, Data>();
         checkBufferStatus();
         buffer = new Buffer();
         load = new Random().nextInt(100);
-        delay = new Random().nextInt(10000);
+        delay = new Random().nextInt(1000);
+        System.out.println("Node-delay "+nodeId+ " is: "+delay+" ms" );
     }
 
-    public void setDataMap(Map<Integer, Data> dataMap) {
-        this.dataMap = dataMap;
+    public void setDataMap(Map<Integer, Data> dataMap2) {
+        for (Map.Entry<Integer, Data> entry : dataMap2.entrySet()) {
+            dataMap.put(entry.getKey(),new Data(entry.getValue()));
+        }
     }
 
     public Map<Integer, Data> getDataMap() {
         return dataMap;
+    }
+
+    public TransportNode getTransportNode() {
+        return transportNode;
     }
 
     public void setTransportNode(TransportNode transportNode) {
@@ -56,27 +64,7 @@ public class Node {
 
 
 
-    public void receiveAndSendData(Data data) {
-        Client targetClient = ClientManager.getClientWithClientId(data.getClinetId());
-        long randomNetDelay = new Random().nextInt(transportNode.getRandomDelayBound());
-        if (data.getType() == 'r') {
-//            Data ndata = dataMap.get(Integer.parseInt(data.getContent()));
-//            Data result = new Data(ndata);
-            System.out.println("random delay of node : " + randomNetDelay + " ms");
-            Data result = new Data(dataMap.get(Integer.parseInt(data.getContent())));
-            result.setTimestamp(data.getTimestamp() + delay / 2 + randomNetDelay);
-            targetClient.getBuffer().addData(result);
-        }
-        if (data.getType() == 'w') {
-            if (dataMap.get(data.getDataId()) == null && data.getVersionstamp() == 1 || data.getVersionstamp() > dataMap.get(data.getDataId()).getVersionstamp()) {
-                data.setType('d');
-                dataMap.put(data.getDataId(), new Data(data));
-                transportNode.plusDataCheckSum(data.getDataId());
-            } else {
-                transportNode.minusDataCheckSum(data.getDataId());
-            }
-        }
-    }
+    public void receiveAndSendData(Data data) {}
 
 
     public void checkBufferStatus() {
@@ -91,7 +79,7 @@ public class Node {
                     }
                 }
             }
-        }, 0, 20);
+        }, 0, 40);
     }
 
     public int calculateWeighting(int delayWeighting, int loadWeighting) {

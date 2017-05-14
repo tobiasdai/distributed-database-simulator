@@ -6,6 +6,7 @@ import java.util.Date;
  * Created by dais on 2017-4-8.
  */
 
+
 /**
  * Read-Request has type 'r', dataId 0, the dataId we needed is writen in content field
  * data has type 'd'
@@ -13,6 +14,8 @@ import java.util.Date;
  * Write-Request has type 'w'
  * type 'n' means failed
  */
+
+
 public class Data {
     private int dataId;
     private char type;
