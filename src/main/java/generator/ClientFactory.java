@@ -20,14 +20,4 @@ public class ClientFactory {
         }
         return list;
     }
-
-    public static List<Client> clientGenerator(int num, TransportNode transportNode) {
-        List<Client> list = new ArrayList<Client>();
-        for (int i = 0; i < num; i++) {
-            list.add(new Client(count, transportNode));
-            count++;
-        }
-        return list;
-    }
-
 }

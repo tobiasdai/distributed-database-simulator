@@ -7,37 +7,28 @@ import java.util.List;
  * Created by dais on 2017-4-8.
  */
 public class Buffer {
-    private List<Data> buffer = new ArrayList<Data>();
+    private List<Packet> buffer = new ArrayList<Packet>();
 
     public boolean isBufferEmpty() {
         return buffer.isEmpty();
     }
 
-    public List<Data> getBufferList() {
-        return buffer;
-    }
 
     public Buffer() {
 
     }
 
-    public void addData(Data data) {
-        buffer.add(new Data(data));
-    }
-
-    public void addData(List<Data> dataList) {
-        for (Data n : dataList) {
-            buffer.add(new Data(n));
-        }
+    public void addPacket(Packet pac){
+        buffer.add(pac);
     }
 
     public void deleteData(Data data) {
         buffer.remove(data);
     }
 
-    public void addData(Buffer buff) {
-        addData(buff.getBufferList());
-    }
+//    public void addData(Buffer buff) {
+//        addData(buff.getBufferList());
+//    }
 
     public void clearBuffer() {
         buffer.clear();

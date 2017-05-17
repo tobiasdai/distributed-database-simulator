@@ -34,7 +34,7 @@ public class TransportNode {
         randomDelayBound = Integer.parseInt(PropertiesConfig.readData("maximumRandomDelay"));
         delayWeighting = Integer.parseInt(PropertiesConfig.readData("delayWeighting"));
         loadWeighting = Integer.parseInt(PropertiesConfig.readData("loadWeighting"));
-        checkBufferStatus();
+//        checkBufferStatus();
         System.out.println("RandomDelayBound: " + randomDelayBound + " ms");
         System.out.println("Client Timeout: " + Client.clientTimeOut + "ms");
         System.out.println("Writefactor :"+PropertiesConfig.readData("writeFactor"));
@@ -47,7 +47,6 @@ public class TransportNode {
         delayMap.put(id, node.getDelay());
         loadMap.put(id, node.getLoad());
         weightingMap.put(id, node.calculateWeighting(delayWeighting, loadWeighting));
-        node.setTransportNode(this);
     }
 
     public void generateNodeMap(Map<Integer, Node> nodeMap) {
@@ -129,37 +128,37 @@ public class TransportNode {
     }
 
 
-    public void checkBufferStatus() {
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if (!buffer.isBufferEmpty()) {
-                    if(PropertiesConfig.readData("writeFactor").equals("default")){
-                        writeFactor = (int) Math.floor(nodeMap.size() / 2) + 1;
-                        readFactor = nodeMap.size() - writeFactor + 1;
-                    }else{
-                        //new writeFactor here
-                    }
-                    for (ListIterator<Data> it = buffer.getBufferList().listIterator(); it.hasNext(); ) {
-                        Data data = it.next();
-                        it.remove();
-                        try {
-                            if (data.getType() == 'r') {
-                                chooseNode(data);
-                                break;
-                            }
-                            if (data.getType() == 'w') {
-                                notifyNodes(data);
-                                break;
-                            }
-                            Thread.sleep(20);
-                        } catch (InterruptedException e) {
-                        }
-                    }
-                }
-            }
-        }, 0, 40);
-    }
+//    public void checkBufferStatus() {
+//        new Timer().schedule(new TimerTask() {
+//            @Override
+//            public void run() {
+//                if (!buffer.isBufferEmpty()) {
+//                    if(PropertiesConfig.readData("writeFactor").equals("default")){
+//                        writeFactor = (int) Math.floor(nodeMap.size() / 2) + 1;
+//                        readFactor = nodeMap.size() - writeFactor + 1;
+//                    }else{
+//                        //new writeFactor here
+//                    }
+//                    for (ListIterator<Data> it = buffer.getBufferList().listIterator(); it.hasNext(); ) {
+//                        Data data = it.next();
+//                        it.remove();
+//                        try {
+//                            if (data.getType() == 'r') {
+//                                chooseNode(data);
+//                                break;
+//                            }
+//                            if (data.getType() == 'w') {
+//                                notifyNodes(data);
+//                                break;
+//                            }
+//                            Thread.sleep(20);
+//                        } catch (InterruptedException e) {
+//                        }
+//                    }
+//                }
+//            }
+//        }, 0, 40);
+//    }
 
     public synchronized void plusDataCheckSum(int dataId) {
         dataCheckSumMap.put(dataId, dataCheckSumMap.get(dataId) + 1);
