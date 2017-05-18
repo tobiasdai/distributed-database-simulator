@@ -1,14 +1,9 @@
-package component;
-
-import manager.ClientManager;
-
-import java.util.Map;
-import java.util.Random;
+package useless;
 
 /**
  * Created by dais on 2017-5-5.
  */
-public class TransportNodeWithQuorum extends TransportNode{
+public class TransportNodeWithQuorum extends TransportNode {
 
 //    private Map<Integer, Integer> dataCheckSumMap;
 //

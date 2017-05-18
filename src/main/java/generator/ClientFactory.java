@@ -1,7 +1,6 @@
 package generator;
 
 import component.Client;
-import component.TransportNode;
 
 import java.util.ArrayList;
 import java.util.List;

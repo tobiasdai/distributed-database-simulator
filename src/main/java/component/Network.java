@@ -16,7 +16,14 @@ public class Network {
     }
 
     public static void transferPackage(Packet pac, Node sNode, Node rNode) {
-
+        SimulatorEvent simulatorEvent = new SimulatorEvent() {
+            @Override
+            public void go() {
+                rNode.receivePacket(pac);
+            }
+        };
+        simulatorEvent.setTime(SimulatorTimer.currentTime + Math.abs(sNode.getDelay()-rNode.getDelay())/2);
+        Simulator.addEvent(simulatorEvent);
     }
 
     public static void transferPacket(Packet pac, Node node, Client client){

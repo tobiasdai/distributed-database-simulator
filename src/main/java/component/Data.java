@@ -7,22 +7,17 @@ import java.util.Date;
  */
 
 
-/**
- * Read-Request has type 'r', dataId 0, the dataId we needed is writen in content field
- * data has type 'd'
- * ack has type 'k' , dataId 0
- * Write-Request has type 'w'
- * type 'n' means failed
- */
-
 
 public class Data {
     private int dataId;
     private String content;
     private int versionstamp;
 
+    public Data(){}
+
     public Data(int dataId){
         this.dataId = dataId;
+        versionstamp = 1;
     }
 
     public int getDataId() {

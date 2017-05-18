@@ -1,9 +1,12 @@
 package manager;
 
 import component.Client;
+import component.Data;
+import component.Node;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by dais on 2017-4-16.
@@ -26,5 +29,17 @@ public class ClientManager {
         return clientList.get(id-1);
     }
 
+    public static void clientAddNode(){
+        for(Client client:clientList){
+            for(Node node:NodeManager.nodeList){
+                client.addNode(node);
+            }
+        }
+    }
 
+    public static void clientAddDataMap(Map<Integer, Data> datamap){
+        for(Client client:clientList){
+            client.setDataMap(datamap);
+        }
+    }
 }

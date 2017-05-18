@@ -1,5 +1,7 @@
-package component;
+package useless;
 
+import component.Data;
+import component.Node;
 import manager.ClientManager;
 
 import java.util.Map;
@@ -9,7 +11,7 @@ import java.util.Random;
  * Created by dais on 2017-5-4.
  * This Class offers the base strategy "easy read and easy write"
  */
-public class ReadWriteNode extends Node{
+public class ReadWriteNode extends Node {
     public ReadWriteNode(int id){
         super(id);
     }

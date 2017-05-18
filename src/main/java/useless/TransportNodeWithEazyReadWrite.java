@@ -1,15 +1,9 @@
-package component;
-
-import manager.ClientManager;
-import manager.PropertiesConfig;
-
-import java.util.Map;
-import java.util.Random;
+package useless;
 
 /**
  * Created by dais on 2017-5-11.
  */
-public class TransportNodeWithEazyReadWrite extends TransportNode{
+public class TransportNodeWithEazyReadWrite extends TransportNode {
 
 //    @Override
 //    public void chooseNode(Data data) {

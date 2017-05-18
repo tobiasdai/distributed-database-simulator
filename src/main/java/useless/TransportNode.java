@@ -1,5 +1,8 @@
-package component;
+package useless;
 
+import component.Client;
+import component.Data;
+import component.Node;
 import manager.ClientManager;
 import manager.PropertiesConfig;
 
@@ -17,7 +20,6 @@ public class TransportNode {
     protected Map<Integer, Integer> loadMap;
     protected Map<Integer, Integer> weightingMap;
     protected Map<Integer, Integer> dataCheckSumMap;
-    protected Buffer buffer;
     protected int delayWeighting;
     protected int loadWeighting;
     protected int randomDelayBound;
@@ -30,7 +32,6 @@ public class TransportNode {
         loadMap = new HashMap<Integer, Integer>();
         weightingMap = new HashMap<Integer, Integer>();
         dataCheckSumMap = new HashMap<Integer, Integer>();
-        buffer = new Buffer();
         randomDelayBound = Integer.parseInt(PropertiesConfig.readData("maximumRandomDelay"));
         delayWeighting = Integer.parseInt(PropertiesConfig.readData("delayWeighting"));
         loadWeighting = Integer.parseInt(PropertiesConfig.readData("loadWeighting"));
@@ -168,9 +169,6 @@ public class TransportNode {
         dataCheckSumMap.put(dataId, dataCheckSumMap.get(dataId) - 1);
     }
 
-    public Buffer getBuffer() {
-        return buffer;
-    }
 
     protected void nodeBubbleSort(Node[] nodes, char type) {
         for (int i = 0; i < nodes.length - 1; i++)

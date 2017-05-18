@@ -6,11 +6,14 @@ package component;
 public class ResponsePacket extends Packet{
     private Data responseData;
 
-    public ResponsePacket(char type,Data data,long timestamp){
+    public ResponsePacket(int dataId,String type,Data data,long timestamp){
+        setDataId(dataId);
         setPacketType(type);
         responseData = data;
         setTimestamp(timestamp);
     }
 
-
+    public Data getResponseData() {
+        return responseData;
+    }
 }

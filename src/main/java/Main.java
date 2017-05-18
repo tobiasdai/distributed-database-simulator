@@ -3,6 +3,7 @@ import generator.ClientFactory;
 import generator.DataFactory;
 import generator.NodeFactory;
 import manager.ClientManager;
+import manager.NodeManager;
 import manager.PropertiesConfig;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.Map;
  */
 public class Main {
     private static String mode = PropertiesConfig.readData("mode");
+
     public static void main(String[] args) throws Exception {
 //        System.out.println("Test start! Mode:"+PropertiesConfig.readData("mode"));
 //        if(PropertiesConfig.readData("mode").equals("writeQuorum")){
@@ -25,24 +27,36 @@ public class Main {
 //        }else if(PropertiesConfig.readData("mode").equals("eazyWrite")){
 //            eazyWriteTest();
 //        }
-    ClientManager.addAllClient(ClientFactory.clientGenerator(2));
-    Client client1 = ClientManager.getClientWithClientId(1);
-    Client client2 = ClientManager.getClientWithClientId(2);
-    Node node1 = new Node(1);
-    Map<Integer, Data> datamap = DataFactory.dataMapGenerator(2);
-    node1.setDataMap(datamap);
-    client1.addNode(node1);
-    client2.addNode(node1);
-    client1.sendReadRequest(3);
-    client2.sendReadRequest(3);
-    Simulator.go();
+        init();
+//        readTest(1,1,50);
+//        readTest(1,500,55);
+//        writeTest(1,2,50);
+        writeTest(1,300,70);
+        Simulator.go();
     }
 
 
+    public static void readTest(int clientId,int dataId,long starttime) {
+        SimulatorEvent simulatorEvent = new SimulatorEvent() {
+            @Override
+            public void go() {
+                ClientManager.getClientWithClientId(clientId).sendReadRequest(dataId);
+            }
+        };
+        simulatorEvent.setTime(starttime);
+        Simulator.addEvent(simulatorEvent);
+    }
 
-
-
-
+    public static void writeTest(int clientId,int dataId,long starttime) {
+        SimulatorEvent simulatorEvent = new SimulatorEvent() {
+            @Override
+            public void go() {
+                ClientManager.getClientWithClientId(clientId).sendWriteRequest(dataId);
+            }
+        };
+        simulatorEvent.setTime(starttime);
+        Simulator.addEvent(simulatorEvent);
+    }
 
 
 //    public static void eazyWriteTest() throws InterruptedException{
@@ -51,7 +65,6 @@ public class Main {
 //        ClientManager.getClientWithClientId(1).sendWriteRequest(2);
 //        ClientManager.getClientWithClientId(2).sendWriteRequest(2);
 //    }
-
 
 
 //    public static void eazyReadTest() throws InterruptedException{
@@ -75,9 +88,13 @@ public class Main {
 //        ClientManager.getClientWithClientId(2).sendWriteRequest(4);
 //    }
 //
-//    private static void init(){
-//        Map<Integer, Data> datamap = DataFactory.dataMapGenerator(2);
-//        ClientManager.addAllClient(ClientFactory.clientGenerator(2, transportNode));
-//    }
+    private static void init(){
+        ClientManager.addAllClient(ClientFactory.clientGenerator(2));
+        NodeManager.addAllNode(NodeFactory.nodeGenerator(3));
+        Map<Integer, Data> datamap = DataFactory.dataMapGenerator(2);
+        ClientManager.clientAddDataMap(datamap);
+        NodeManager.nodeAddDataMap(datamap);
+        ClientManager.clientAddNode();
+    }
 
 }

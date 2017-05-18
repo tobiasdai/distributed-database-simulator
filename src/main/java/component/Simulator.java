@@ -11,28 +11,39 @@ import java.util.*;
 public class Simulator {
     private static List<SimulatorEvent> simulatorEvents = new ArrayList<SimulatorEvent>();
 
-    public static void go(){
-        while(!simulatorEvents.isEmpty()){
-        SimulatorTimer.currentTime = simulatorEvents.get(0).getTime();
-        simulatorEvents.get(0).go();
-        simulatorEvents.remove(0);
+    public static void go() {
+        while (!simulatorEvents.isEmpty()) {
+            SimulatorTimer.currentTime = simulatorEvents.get(0).getTime();
+            simulatorEvents.get(0).go();
+            simulatorEvents.remove(0);
+        }
+    }
+
+    public static void addEvent(SimulatorEvent simulatorEvent) {
+        simulatorEvents.add(simulatorEvent);
         Collections.sort(simulatorEvents, new Comparator<SimulatorEvent>() {
             @Override
             public int compare(SimulatorEvent o1, SimulatorEvent o2) {
-                if(o1.getTime()>=o2.getTime()){
-                    return 1;
-                }else{
-                    return 0;
-                }
+                return new Long(o1.getTime()).compareTo(new Long(o2.getTime()));
             }
         });
     }
-    }
 
-    public static void addEvent(SimulatorEvent simulatorEvent){
-        simulatorEvents.add(simulatorEvent);
-    }
+    public static void deleteEvent(long time){
+        SimulatorEvent simulator = new SimulatorEvent() {
+            @Override
+            public void go() {
 
+            }
+        };
+        for(SimulatorEvent simulator1:simulatorEvents){
+            if(simulator1.getTime() == time){
+                simulator = simulator1;
+                break;
+            }
+        }
+        simulatorEvents.remove(simulator);
+    }
 
 }
 
