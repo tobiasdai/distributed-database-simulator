@@ -5,5 +5,5 @@ package component;
  * Global time controller
  */
 public class SimulatorTimer {
-    public static long currentTime = 0;
+    public static int currentTime = 0;
 }

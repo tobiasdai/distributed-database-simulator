@@ -10,10 +10,11 @@ import java.util.*;
 
 public class Simulator {
     private static List<SimulatorEvent> simulatorEvents = new ArrayList<SimulatorEvent>();
+    public static int currentTime = 0;
 
     public static void go() {
         while (!simulatorEvents.isEmpty()) {
-            SimulatorTimer.currentTime = simulatorEvents.get(0).getTime();
+            currentTime = simulatorEvents.get(0).getTime();
             simulatorEvents.get(0).go();
             simulatorEvents.remove(0);
         }
@@ -24,12 +25,12 @@ public class Simulator {
         Collections.sort(simulatorEvents, new Comparator<SimulatorEvent>() {
             @Override
             public int compare(SimulatorEvent o1, SimulatorEvent o2) {
-                return new Long(o1.getTime()).compareTo(new Long(o2.getTime()));
+                return new Integer(o1.getTime()).compareTo(new Integer(o2.getTime()));
             }
         });
     }
 
-    public static void deleteEvent(long time){
+    public static void deleteEvent(int time){
         SimulatorEvent simulator = new SimulatorEvent() {
             @Override
             public void go() {

@@ -1,15 +1,14 @@
 package useless;
 
 import component.Data;
-import useless.ReadWriteNode;
 
 /**
  * Created by dais on 2017-5-13.
  * This Class implements the strategy "read-and writequorum"
  */
-public class ReadWriteNodeWithQuorum extends ReadWriteNode {
+public class ReadWriteNodeWithQuorum  {
     public ReadWriteNodeWithQuorum(int id){
-        super(id);
+
     }
 
     public void receiveAndSendData(Data data) {

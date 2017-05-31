@@ -5,6 +5,7 @@ import component.Data;
 import component.Node;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,17 +19,21 @@ public class NodeManager {
         nodeList.add(node);
     }
 
-    public static void addAllNode(List<Node> nodeList2){
+    public static void addAllNode(List<Node> nodeList2) {
         nodeList.addAll(nodeList2);
     }
 
     public static Node getNodeWithClientId(int id) {
-        return nodeList.get(id-1);
+        return nodeList.get(id - 1);
     }
 
-    public static void nodeAddDataMap(Map<Integer, Data> datamap){
-        for(Node node:nodeList){
-            node.setDataMap(datamap);
+    public static void nodeAddDataMap(Map<Integer, Data> datamap) {
+        for (Node node : nodeList) {
+            String s = "node" + node.getNodeId() + "_initialData";
+            if (PropertiesConfig.readData(s) == null) {
+            } else if (PropertiesConfig.readData(s).equals("true")) {
+                node.setDataMap(datamap);
+            }
         }
     }
 }

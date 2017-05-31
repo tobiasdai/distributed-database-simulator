@@ -45,9 +45,9 @@ public class TransportNode {
     public void addNode(Node node) {
         int id = node.getNodeId();
         nodeMap.put(id, node);
-        delayMap.put(id, node.getDelay());
+//        delayMap.put(id, node.getDelay());
         loadMap.put(id, node.getLoad());
-        weightingMap.put(id, node.calculateWeighting(delayWeighting, loadWeighting));
+//        weightingMap.put(id, node.calculateWeighting(delayWeighting, loadWeighting));
     }
 
     public void generateNodeMap(Map<Integer, Node> nodeMap) {
@@ -94,7 +94,7 @@ public class TransportNode {
 
     public void updataDelay() {
         for (Map.Entry<Integer, Node> entry : nodeMap.entrySet()) {
-            delayMap.put(entry.getKey(), entry.getValue().getDelay());
+//            delayMap.put(entry.getKey(), entry.getValue().getDelay());
         }
     }
 
@@ -106,7 +106,7 @@ public class TransportNode {
 
     public void updataWeighting(){
         for (Map.Entry<Integer, Node> entry : nodeMap.entrySet()) {
-            weightingMap.put(entry.getKey(), entry.getValue().calculateWeighting(delayWeighting, loadWeighting));
+//            weightingMap.put(entry.getKey(), entry.getValue().calculateWeighting(delayWeighting, loadWeighting));
         }
     }
 

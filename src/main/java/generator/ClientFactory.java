@@ -1,9 +1,11 @@
 package generator;
 
 import component.Client;
+import manager.PropertiesConfig;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by dais on 2017-4-10.

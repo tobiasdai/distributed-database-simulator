@@ -17,10 +17,9 @@ public class PropertiesConfig {
     }
 
     public static Properties getPropertiesConfig(String filePath) {
-        filePath = PropertiesConfig.class.getResource("/" + filePath).getPath();
         Properties props = new Properties();
         try {
-            InputStream in = new BufferedInputStream(new FileInputStream(filePath));
+            InputStream in = new BufferedInputStream(PropertiesConfig.class.getResourceAsStream("/"+filePath));
             props.load(in);
             in.close();
             return props;

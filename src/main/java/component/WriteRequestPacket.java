@@ -6,7 +6,7 @@ package component;
 public class WriteRequestPacket extends Packet {
     private Data dataToWrite;
 
-    public WriteRequestPacket(Data data,long timestamp,int fromClinetId) {
+    public WriteRequestPacket(Data data,int timestamp,int fromClinetId) {
         dataToWrite = data;
         setDataId(data.getDataId());
         setPacketType("w");

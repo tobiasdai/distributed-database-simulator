@@ -6,7 +6,7 @@ package component;
 public class DataCopyPacket extends Packet{
     private Data dataToCopy;
 
-    public DataCopyPacket(Data data,long timestamp,int fromNodeId){
+    public DataCopyPacket(Data data,int timestamp,int fromNodeId){
         setDataId(data.getDataId());
         setPacketType("c");
         setTimestamp(timestamp);

@@ -16,7 +16,6 @@ public class DataFactory {
         Map<Integer, Data> dataMap = new HashMap<Integer, Data>();
         for (int i = 0; i < num; i++) {
             Data data = new Data(counter);
-            data.setVersionstamp(1);
             dataMap.put(counter, data);
             counter++;
         }

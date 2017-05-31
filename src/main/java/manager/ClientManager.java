@@ -21,25 +21,29 @@ public class ClientManager {
         clientList.add(client);
     }
 
-    public static void addAllClient(List<Client> clientList2){
+    public static void addAllClient(List<Client> clientList2) {
         clientList.addAll(clientList2);
     }
 
     public static Client getClientWithClientId(int id) {
-        return clientList.get(id-1);
+        return clientList.get(id - 1);
     }
 
-    public static void clientAddNode(){
-        for(Client client:clientList){
-            for(Node node:NodeManager.nodeList){
+    public static void clientAddNode() {
+        for (Client client : clientList) {
+            for (Node node : NodeManager.nodeList) {
                 client.addNode(node);
             }
         }
     }
 
-    public static void clientAddDataMap(Map<Integer, Data> datamap){
-        for(Client client:clientList){
-            client.setDataMap(datamap);
+    public static void clientAddDataMap(Map<Integer, Data> datamap) {
+        for (Client client : clientList) {
+            String s = "client" + client.getClientId() + "_initialData";
+            if (PropertiesConfig.readData(s)==null) {
+            }else if(PropertiesConfig.readData(s).equals("ture")){
+                client.setDataMap(datamap);
+            }
         }
     }
 }

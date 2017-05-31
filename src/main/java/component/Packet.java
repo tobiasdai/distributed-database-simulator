@@ -5,7 +5,7 @@ package component;
  */
 public class Packet {
     private String packetType;
-    private long timestamp;
+    private int timestamp;
     private int sourceId;
     private int dataId;
     public String getPacketType() {
@@ -17,11 +17,11 @@ public class Packet {
         this.packetType = packetType;
     }
 
-    public long getTimestamp() {
+    public int getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(long timestamp) {
+    public void setTimestamp(int timestamp) {
         this.timestamp = timestamp;
     }
 

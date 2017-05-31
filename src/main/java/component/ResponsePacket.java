@@ -6,7 +6,7 @@ package component;
 public class ResponsePacket extends Packet{
     private Data responseData;
 
-    public ResponsePacket(int dataId,String type,Data data,long timestamp){
+    public ResponsePacket(int dataId,String type,Data data,int timestamp){
         setDataId(dataId);
         setPacketType(type);
         responseData = data;

@@ -6,7 +6,7 @@ package component;
 public class ReadRequestPacket extends Packet{
     private int neededDataVersion;
 
-    public ReadRequestPacket(int neededDataId,int neededDataVersion,long timestamp,int fromClinetId) {
+    public ReadRequestPacket(int neededDataId,int neededDataVersion,int timestamp,int fromClinetId) {
         this.neededDataVersion = neededDataVersion;
         setDataId(neededDataId);
         setSourceId(fromClinetId);
