@@ -31,9 +31,7 @@ public class ClientManager {
 
     public static void clientAddNode() {
         for (Client client : clientList) {
-            for (Node node : NodeManager.nodeList) {
-                client.addNode(node);
-            }
+            client.setNodeList(NodeManager.nodeList);
         }
     }
 

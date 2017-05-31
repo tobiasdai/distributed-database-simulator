@@ -31,12 +31,22 @@ public class Main {
         Simulator.go();
     }
 
-
     public static void readTest(int clientId,int dataId,int starttime) {
         SimulatorEvent simulatorEvent = new SimulatorEvent() {
             @Override
             public void go() {
-                ClientManager.getClientWithClientId(clientId).sendReadRequest(dataId);
+                ClientManager.getClientWithClientId(clientId).sendReadRequest(dataId,0);
+            }
+        };
+        simulatorEvent.setTime(starttime);
+        Simulator.addEvent(simulatorEvent);
+    }
+
+    public static void specifiedReadTest(int clientId,int dataId,int starttime,int nodeId){
+        SimulatorEvent simulatorEvent = new SimulatorEvent() {
+            @Override
+            public void go() {
+                ClientManager.getClientWithClientId(clientId).sendReadRequest(dataId,nodeId);
             }
         };
         simulatorEvent.setTime(starttime);
@@ -47,7 +57,18 @@ public class Main {
         SimulatorEvent simulatorEvent = new SimulatorEvent() {
             @Override
             public void go() {
-                ClientManager.getClientWithClientId(clientId).sendWriteRequest(dataId);
+                ClientManager.getClientWithClientId(clientId).sendWriteRequest(dataId,0);
+            }
+        };
+        simulatorEvent.setTime(starttime);
+        Simulator.addEvent(simulatorEvent);
+    }
+
+    public static void specifiedwriteTest(int clientId,int dataId,int starttime,int nodeId) {
+        SimulatorEvent simulatorEvent = new SimulatorEvent() {
+            @Override
+            public void go() {
+                ClientManager.getClientWithClientId(clientId).sendWriteRequest(dataId,nodeId);
             }
         };
         simulatorEvent.setTime(starttime);

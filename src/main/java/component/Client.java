@@ -28,24 +28,22 @@ public class Client {
         return clientId;
     }
 
-
-    public void addNode(Node node) {
-        nodeList.add(node);
-    }
-
     public void setDataMap(Map<Integer, Data> dataMap) {
         this.dataMap = dataMap;
     }
 
-    /**
-     * and check the answer
-     * The read request is implemented as Data with type "r" and dataId 0
-     *
-     * @param neededDataId The id of the data which we need to read, was writen as content in read request(Data Instance)
-     * @throws InterruptedException
-     */
-    public void sendReadRequest(int neededDataId) {
-        int nodeNumber = new Random().nextInt(nodeList.size());
+    public void setNodeList(List<Node> nodeList) {
+        this.nodeList = nodeList;
+    }
+
+
+    public void sendReadRequest(int neededDataId,int nodeId) {
+        int nodeNumber = 0;
+        if(nodeId<=0){
+            nodeNumber = new Random().nextInt(nodeList.size());
+        }else{
+            nodeNumber = nodeId-1;
+        }
         System.out.println("Time " + Simulator.currentTime + ": Client " + getClientId() + " sent a read request of data " + neededDataId + " to node " + nodeList.get(nodeNumber).getNodeId() + " (" + nodeList.get(nodeNumber).getDelay() / 2 + "ms)");
         int neededDataVersion = 1;
         if (dataMap.get(neededDataId) != null) {
@@ -59,7 +57,7 @@ public class Client {
                 public void go() {
                     retry++;
                     System.out.println("- - - - - - - - - - - - - - Timeout, The "+retry +". attempt - - - - - - - - - - - - - - - - ");
-                    sendReadRequest(neededDataId);
+                    sendReadRequest(neededDataId,nodeId);
 
                 }
             };
@@ -71,8 +69,13 @@ public class Client {
         }
     }
 
-    public void sendWriteRequest(int dataId) {
-        int nodeNumber = new Random().nextInt(nodeList.size());
+    public void sendWriteRequest(int dataId,int nodeId) {
+        int nodeNumber = 0;
+        if(nodeId<=0){
+            nodeNumber = new Random().nextInt(nodeList.size());
+        }else{
+            nodeNumber = nodeId-1;
+        }
         System.out.println("Time " + Simulator.currentTime + ": Client " + getClientId() + " sent a write request of data " + dataId + " to node " + nodeList.get(nodeNumber).getNodeId() + " (" + nodeList.get(nodeNumber).getDelay() / 2 + "ms)");
         Data data = new Data(dataId);
         if (dataMap.get(dataId) != null) {
@@ -87,7 +90,7 @@ public class Client {
                 public void go() {
                     retry++;
                     System.out.println("- - - - - - - - - - - - - - Timeout, The "+retry +". attempt - - - - - - - - - - - - - - - - ");
-                    sendWriteRequest(dataId);
+                    sendWriteRequest(dataId,nodeId);
 
                 }
             };
