@@ -1,6 +1,4 @@
-package component;
-
-import component.SimulatorEvent;
+package controller;
 
 import java.util.*;
 
@@ -30,20 +28,21 @@ public class Simulator {
         });
     }
 
-    public static void deleteEvent(int time){
+    public static void deleteEvent(int time) {
         SimulatorEvent simulator = new SimulatorEvent() {
             @Override
             public void go() {
 
             }
         };
-        for(SimulatorEvent simulator1:simulatorEvents){
-            if(simulator1.getTime() == time){
-                simulator = simulator1;
+        for (SimulatorEvent simulatorEvent : simulatorEvents) {
+            if (simulatorEvent.getTime() == time && simulatorEvent.getForTimeoutCheck()) {
+                simulator = simulatorEvent;
+                simulatorEvents.remove(simulator);
                 break;
             }
         }
-        simulatorEvents.remove(simulator);
+
     }
 
 }

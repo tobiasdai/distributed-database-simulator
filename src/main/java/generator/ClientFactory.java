@@ -19,6 +19,7 @@ public class ClientFactory {
             list.add(new Client(count));
             count++;
         }
+        System.out.println("Client initialization is successful, number of clients: "+num);
         return list;
     }
 }

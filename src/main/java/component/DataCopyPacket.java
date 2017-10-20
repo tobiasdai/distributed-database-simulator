@@ -11,6 +11,7 @@ public class DataCopyPacket extends Packet{
         setPacketType("c");
         setTimestamp(timestamp);
         setSourceId(fromNodeId);
+        dataToCopy = data;
     }
 
     public Data getDataToCopy() {

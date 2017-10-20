@@ -1,8 +1,7 @@
 package component;
 
 
-import manager.ClientManager;
-import manager.NodeManager;
+import controller.Simulator;
 import manager.PropertiesConfig;
 
 import java.util.*;
@@ -14,17 +13,22 @@ public abstract class Node {
     protected int nodeId;
     protected int load;
     protected int delay;
+    protected boolean status;
     protected Map<Integer, Data> dataMap;
-    public static int processingTime = Integer.parseInt(PropertiesConfig.readData("nodeProcessingTime"));
+    protected static int processingTime = Integer.parseInt(PropertiesConfig.readData("nodeProcessingTime"));
 
 
-
-    public Node(int nodeId, int delay, int load) {
+    public Node(int nodeId, int delay, int load, boolean status) {
         this.nodeId = nodeId;
         this.delay = delay;
         this.load = load;
+        this.status = status;
         dataMap = new HashMap<Integer, Data>();
-        System.out.println("Node "+nodeId+": delay = "+delay+" ms, load = "+load+"%");
+        if (status) {
+            System.out.println("Node " + nodeId + ": delay = " + delay + " ms, load = " + load + "%");
+        } else {
+            System.out.println("Node " + nodeId + " is offline. The package sent to this node will be lost.");
+        }
     }
 
     public void setDataMap(Map<Integer, Data> dataMap2) {
@@ -49,20 +53,28 @@ public abstract class Node {
         return nodeId;
     }
 
+    public boolean getStatus() {
+        return status;
+    }
 
-    public void receivePacket(Packet pac) {
-        switch (pac.getPacketType()) {
+    public void setDelay(int delay){this.delay = delay;}
+
+    public void receivePacket(Packet packet) {
+        if (this.status == false) {
+            return;
+        }
+        switch (packet.getPacketType()) {
             case "r":
-                System.out.println("Time " + Simulator.currentTime + ": Node " + nodeId + " received the read request of data " + pac.getDataId() + " from clinet " + pac.getSourceId()+" ("+processingTime+"ms)");
-                applyReadstrategy(pac);
+                System.out.println("Time " + Simulator.currentTime + ": Node " + nodeId + " received the read request of data " + packet.getDataId() + " from clinet " + packet.getSourceId() + " (" + processingTime + "ms)");
+                applyReadstrategy(packet);
                 break;
             case "w":
-                System.out.println("Time " + Simulator.currentTime + ": Node " + nodeId + " received the write request of data " + pac.getDataId() + " from clinet " + pac.getSourceId()+" ("+processingTime+"ms)");
-                applyWriteStrategy(pac);
+                System.out.println("Time " + Simulator.currentTime + ": Node " + nodeId + " received the write request of data " + packet.getDataId() + " from clinet " + packet.getSourceId() + " (" + processingTime + "ms)");
+                applyWriteStrategy(packet);
                 break;
             case "c":
-                System.out.println("Time " + Simulator.currentTime + ": Node " + nodeId + " received the copy of data " + pac.getDataId() + " from node " + pac.getSourceId()+" ("+processingTime+"ms)");
-                applySynchronizeStrategy(pac);
+                System.out.println("Time " + Simulator.currentTime + ": Node " + nodeId + " received the copy of data " + packet.getDataId() + " from node " + packet.getSourceId() + " (" + processingTime + "ms)");
+                applySynchronizeStrategy(packet);
                 break;
             default:
                 System.out.println("Undefined data type, the packet was Invalid");
@@ -74,8 +86,10 @@ public abstract class Node {
 
     public abstract void applyWriteStrategy(Packet packet);
 
-    public void applySynchronizeStrategy(Packet packet){};
+    public abstract void applySynchronizeStrategy(Packet packet);
 
-
+    public void setStatus(boolean status) {
+        this.status = status;
+    }
 }
 

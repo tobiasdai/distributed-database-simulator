@@ -15,9 +15,16 @@ public class Data {
 
     public Data(){}
 
+    public Data(Data data){
+        dataId = data.getDataId();
+        content = data.content;
+        versionstamp = data.versionstamp;
+    }
+
     public Data(int dataId){
         this.dataId = dataId;
         versionstamp = 1;
+        content = "";
     }
 
     public int getDataId() {

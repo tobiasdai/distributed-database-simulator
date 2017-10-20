@@ -11,6 +11,7 @@
     </content>
     <orderEntry type="jdk" jdkName="1.8" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Arquillian JUnit:Release" level="project" />
+    <orderEntry type="library" exported="" name="org.fusesource.jansi:jansi:1.16" level="project" />
+    <orderEntry type="library" name="Maven: org.fusesource.jansi:jansi:1.16" level="project" />
   </component>
 </module>

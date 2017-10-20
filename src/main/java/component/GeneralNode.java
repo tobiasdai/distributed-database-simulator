@@ -1,8 +1,16 @@
 package component;
 
+import controller.Simulator;
+import controller.SimulatorEvent;
 import manager.ClientManager;
 import manager.NodeManager;
 import manager.PropertiesConfig;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.fusesource.jansi.Ansi.Color.*;
+import static org.fusesource.jansi.Ansi.ansi;
 
 /**
  * general Node
@@ -10,8 +18,9 @@ import manager.PropertiesConfig;
  */
 public class GeneralNode extends Node {
     public static int copytime = Integer.parseInt(PropertiesConfig.readData("nodeCopytime"));
-    public GeneralNode(int nodeId,int delay,int load){
-        super(nodeId,delay,load);
+
+    public GeneralNode(int nodeId, int delay, int load, boolean status) {
+        super(nodeId, delay, load, status);
     }
 
     @Override
@@ -22,12 +31,16 @@ public class GeneralNode extends Node {
                 Packet backPacket = new ResponsePacket(packet.getDataId(), "rn", null, packet.getTimestamp());
                 System.out.println("Time " + Simulator.currentTime + ": Node " + nodeId + " tried to read data " + packet.getDataId() + " for client " + packet.getSourceId());
                 if (dataMap.get(packet.getDataId()) == null) {
-                    System.out.println("        The data " + packet.getDataId() + " was not found in node " + getNodeId()+"  <<= = = = = = = = = = = = = = = = Error-information");
-                } else if (((ReadRequestPacket) packet).getNeededDataVersion() <= dataMap.get(packet.getDataId()).getVersionstamp()) {
-                    System.out.println("        The data " + packet.getDataId() + " was found in node " + getNodeId());
-                    backPacket = new ResponsePacket(packet.getDataId(), "rk", dataMap.get(packet.getDataId()), packet.getTimestamp());
+
+                    //this node can not find data
+                    System.out.println(ansi().eraseScreen().fg(RED) + "        The data " + packet.getDataId() + " was not found in node " + getNodeId() + ansi().reset());
+                } else if (dataMap.get(packet.getDataId()).getVersionstamp() < ((ReadRequestPacket) packet).getNeededDataVersion()) {
+
+                    //this node has a lower version of data. Error
+                    System.out.println(ansi().eraseScreen().fg(BLUE) + "        The dataversion of data " + packet.getDataId() + ": " + dataMap.get(packet.getDataId()).getVersionstamp() + ansi().eraseScreen().fg(RED) + " which was much lower in this node. Please check the needed dataversion first.  " + getNodeId() + ansi().reset());
                 } else {
-                    System.out.println("        The dataversion of data "+packet.getDataId()+" was lower than expected in node " + getNodeId()+"  <<= = = = = = = = = = = = = = = = Error-information");
+                    System.out.println(ansi().eraseScreen().fg(GREEN) + "        The data " + packet.getDataId() + " was found in node " + getNodeId() + ansi().eraseScreen().fg(BLUE) + " with the versionstamp: " + dataMap.get(packet.getDataId()).getVersionstamp() + ansi().reset());
+                    backPacket = new ResponsePacket(packet.getDataId(), "rk", dataMap.get(packet.getDataId()), packet.getTimestamp());
                 }
                 backPacket.setSourceId(getNodeId());
                 System.out.println("        Node " + GeneralNode.this.getNodeId() + " sent a packet back to client " + packet.getSourceId() + " (" + getDelay() / 2 + "ms)");
@@ -41,14 +54,16 @@ public class GeneralNode extends Node {
 
     @Override
     public void applyWriteStrategy(Packet packet) {
-        WriteRequestPacket pac = (WriteRequestPacket)packet;
+        WriteRequestPacket pac = (WriteRequestPacket) packet;
         SimulatorEvent simulatorEvent = new SimulatorEvent() {
             @Override
             public void go() {
                 Packet backPacket = new ResponsePacket(packet.getDataId(), "wn", null, pac.getTimestamp());
                 System.out.println("Time " + Simulator.currentTime + ": Node " + nodeId + " tried to write data " + pac.getDataId() + " for client " + pac.getSourceId());
-                if (dataMap.get(pac.getDataId()) == null ||pac.getDataToWrite().getVersionstamp() > dataMap.get(pac.getDataId()).getVersionstamp()) {
-                    System.out.println("        The data " + pac.getDataId() + " was writen in node " + getNodeId());
+
+                if (dataMap.get(packet.getDataId()) == null || pac.getDataToWrite().getVersionstamp() > dataMap.get(pac.getDataId()).getVersionstamp()) {
+                    dataMap.put(pac.getDataId(), pac.getDataToWrite());
+                    System.out.println(ansi().eraseScreen().fg(GREEN) + "        The data " + pac.getDataId() + " was writen in node " + getNodeId() + ansi().eraseScreen().fg(BLUE) + " with versionstamp " + pac.getDataToWrite().getVersionstamp() + ansi().reset());
                     backPacket = new ResponsePacket(pac.getDataId(), "wk", null, pac.getTimestamp());
                     SimulatorEvent simulatorEvent1 = new SimulatorEvent() {
                         @Override
@@ -56,11 +71,13 @@ public class GeneralNode extends Node {
                             synchronizeData(pac.getDataToWrite());
                         }
                     };
-                    System.out.println("        "+copytime+"ms later start to synchronize data "+pac.getDataId());
-                    simulatorEvent1.setTime(Simulator.currentTime + processingTime+copytime);
+                    System.out.println(ansi().eraseScreen().fg(YELLOW) + "        " + copytime + "ms later start to synchronize data " + pac.getDataId() + ansi().reset());
+                    simulatorEvent1.setTime(Simulator.currentTime + processingTime + copytime);
                     Simulator.addEvent(simulatorEvent1);
                 } else {
-                    System.out.println("        The dataversion of data "+pac.getDataId()+" was lower than expected in node " + getNodeId()+"  <<= = = = = = = = = = = = = = = = Error-information");
+
+                    //the versionstamp <= the versionstamp in array
+                    System.out.println(ansi().eraseScreen().fg(RED) + "        The dataversion of data " + pac.getDataId() + " in the packet: "+ansi().eraseScreen().fg(BLUE)+pac.getDataToWrite().getVersionstamp()+ ansi().eraseScreen().fg(RED)+" which was not greater than expected in this node: " + ansi().eraseScreen().fg(BLUE) + dataMap.get(pac.getDataId()).getVersionstamp() + ", please read the latest data first " + ansi().reset());
                 }
                 backPacket.setSourceId(getNodeId());
                 System.out.println("        Node " + GeneralNode.this.getNodeId() + " sent a packet back to client " + pac.getSourceId() + " (" + getDelay() / 2 + "ms)");
@@ -79,7 +96,7 @@ public class GeneralNode extends Node {
             if (node.getNodeId() == getNodeId()) {
                 continue;
             }
-            Network.transferPackage(pac, this, node);
+            Network.transferPacket(pac, this, node);
         }
     }
 
@@ -89,10 +106,15 @@ public class GeneralNode extends Node {
         SimulatorEvent simulatorEvent = new SimulatorEvent() {
             @Override
             public void go() {
-                if (dataMap.get(pac.getDataId()) == null || pac.getDataToCopy().getVersionstamp() > dataMap.get(pac.getDataId()).getVersionstamp()) {
-                    System.out.println("        The data " + pac.getDataId() + " was copied in node " + getNodeId());
+                if (getStatus() == false) {
+                    System.out.println("Time " + Simulator.currentTime + ":"+ ansi().eraseScreen().fg(RED) +"Error. The Node " + getNodeId() + " was offline, copy data falied" + ansi().reset());
+                    return;
+                }
+                if (dataMap.get(pac.getDataId()) == null || dataMap.get(pac.getDataId()).getVersionstamp() <= pac.getDataToCopy().getVersionstamp()) {
+                    System.out.println("Time " + Simulator.currentTime +":"+ansi().eraseScreen().fg(GREEN) +"The data " + pac.getDataId() + " was copied in node " + getNodeId() + ansi().eraseScreen().fg(BLUE)+" with versionstamp " + pac.getDataToCopy().getVersionstamp() + ansi().reset());
+                    dataMap.put(pac.getDataId(), pac.getDataToCopy());
                 } else {
-
+                    System.out.println("Time " + Simulator.currentTime+":"+ ansi().eraseScreen().fg(RED) + "Error. The data " + pac.getDataId() + " was according version error failed to be copied in node " + getNodeId() + ". Node has already a higher version of data." + ansi().reset());
                 }
             }
         };

@@ -39,7 +39,8 @@ public class ClientManager {
         for (Client client : clientList) {
             String s = "client" + client.getClientId() + "_initialData";
             if (PropertiesConfig.readData(s)==null) {
-            }else if(PropertiesConfig.readData(s).equals("ture")){
+                continue;
+            }else if(PropertiesConfig.readData(s).equals("true")){
                 client.setDataMap(datamap);
             }
         }
